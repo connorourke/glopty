@@ -6,6 +6,7 @@ from scipy.optimize import OptimizeResult
 from pathos.multiprocessing import ProcessingPool as Pool
 import pathos.multiprocessing as mp
 from glob_opt.particle import Particle
+from glob_opt.io import output
 import sys
 
 
@@ -81,7 +82,7 @@ class SOS:
             if particle.fit < self.best_global_fit:
                self.best_global_fit = copy.deepcopy(particle.return_fit)
                self.best_global_vec = copy.deepcopy(particle.return_vec)
-        print("current best",self.best_global_fit)
+        output("Current best fit:" + str(self.best_global_fit)+'\n')
             
     def mutualism(self,part):
         '''
@@ -226,7 +227,7 @@ class SOS:
         self.initialise_particles()
 
         for step in range(self.niter):
-            print("Doing step",step)
+            output("Doing step: "+str(step)+'\n')
             self.run_mutualism()
             self.run_commensalism()
             self.run_parasitism()
