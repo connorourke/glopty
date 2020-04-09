@@ -63,10 +63,11 @@ class SOS:
         '''
 
         if self.restart:
-            vec_fit = self.vector_restart.read_vectors()
+            vec,fit = self.vector_restart.read_vectors()
             for i,vec in enumerate(vec):
-                self.particles.append(Particle(vec,fit[i]))
+                self.particles.append(Particle(np.asarray(vec),fit[i],i))
 
+            self.set_global_best()
         else:
             vectors =lhs(len(self.bounds),self.population)
 
