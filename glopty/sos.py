@@ -5,14 +5,14 @@ import numpy as np
 from scipy.optimize import OptimizeResult
 from pathos.multiprocessing import ProcessingPool as Pool
 import pathos.multiprocessing as mp
-from glob_opt.particle import Particle
-from glob_opt.io import output
+from glopty.particle import Particle
+from glopty.io import output, VectorInOut
 import sys
 
 
 class SOS:
 
-    def __init__(self, func, bounds, niter=100, population=10, ftol=0.001, workers=-1):
+    def __init__(self, func, bounds, niter=100, population=10, ftol=0.001, workers=-1, restart= False):
         ''' 
         Initialise a symbiotic organisms search instance
         
@@ -33,6 +33,8 @@ class SOS:
         self.best_global_fit = math.inf
         self.ftol = ftol
         self.bounds = np.asarray(bounds)
+        self.restart = restart
+        self.vector_restart = VectorInOut(bounds,'sos.rst')
 
         if workers == -1:
             self.pool = Pool(mp.cpu_count())
@@ -60,14 +62,19 @@ class SOS:
             
         '''
 
+        if self.restart:
+            vec_fit = self.vector_restart.read_vectors()
+            for i,vec in enumerate(vec):
+                self.particles.append(Particle(vec,fit[i]))
 
-        vectors =lhs(len(self.bounds),self.population)
+        else:
+            vectors =lhs(len(self.bounds),self.population)
 
-        for i,vector in enumerate(vectors):
-            self.particles.append(Particle(vector,self.function(self.vector_to_pot(vector),self.args),i))
+            for i,vector in enumerate(vectors):
+                self.particles.append(Particle(vector,self.function(self.vector_to_pot(vector),self.args),i))
 
-        self.best_global_fit = copy.deepcopy(self.particles[0].return_fit)
-        self.best_global_vec = copy.deepcopy(self.particles[0].return_vec)
+            self.best_global_fit = copy.deepcopy(self.particles[0].return_fit)
+            self.best_global_vec = copy.deepcopy(self.particles[0].return_vec)
 
     def set_global_best(self):
         '''
@@ -238,7 +245,9 @@ class SOS:
         results_min = OptimizeResult()
         results_min.x = self.vector_to_pot(self.best_global_vec)
         results_min.fun = self.best_global_fit
-
+        
+        self.vector_restart.write_vectors(self.particles)        
+        
         return results_min
 
 

@@ -1,0 +1,4 @@
+pathos
+numpy
+pyDOE
+scipy
