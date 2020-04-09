@@ -42,7 +42,7 @@ class VectorInOut:
         return ((self.bounds[:,1]-self.bounds[:,0])*vector)+self.bounds[:,0]
 
 
-    def write_vectors(self, particles):#vectors, fit):
+    def write_vectors(self, particles):
         '''
         write x-values to restart file, given vectors
 

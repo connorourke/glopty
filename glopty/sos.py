@@ -12,7 +12,7 @@ import sys
 
 class SOS:
 
-    def __init__(self, func, bounds, niter=100, population=10, ftol=0.001, workers=-1, restart= False):
+    def __init__(self, func, bounds, niter=100, population=10, ftol=0.001, workers=-1, restart= False, vec_dump=10):
         ''' 
         Initialise a symbiotic organisms search instance
         
@@ -35,6 +35,7 @@ class SOS:
         self.bounds = np.asarray(bounds)
         self.restart = restart
         self.vector_restart = VectorInOut(bounds,'sos.rst')
+        self.vec_dump = vec_dump
 
         if workers == -1:
             self.pool = Pool(mp.cpu_count())
@@ -242,6 +243,9 @@ class SOS:
             self.set_global_best()
             if self.best_global_fit < self.ftol:
                 break
+            if step%self.vec_dump ==0:
+                output("Going to dump particle vectors\n")
+                self.vector_restart.write_vectors(self.particles)
 
         results_min = OptimizeResult()
         results_min.x = self.vector_to_pot(self.best_global_vec)
