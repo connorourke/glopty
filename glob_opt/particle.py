@@ -8,7 +8,7 @@ class Particle:
 
 
     def vector_to_pos(self,vector,bounds):
-        return ((np.max(bounds)-np.min(bounds)) * vector)  + np.min(bounds)
+        return ((self.bounds[:,1]-self.bounds[:,0])*vector)+self.bounds[:,0]
 
     @property
     def return_fit(self):

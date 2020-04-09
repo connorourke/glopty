@@ -11,24 +11,32 @@ import sys
 
 class SOS:
 
-    def __init__(self,options):
+    def __init__(self, func, bounds, niter=100, population=10, ftol=0.001, workers=-1):
         ''' 
         Initialise a symbiotic organisms search instance
         
         Args:
-            options (dict): set of options for the minimizer
-
+            func (callable): Function to be minimised. f(x, *args) - x is the argument to be minimised, args is a tuple of any additional  fixed parameters to specify the function
+            bounds (list(Double)): list of pairs of (min,max) bounds for x
+            niter (Int): number of iterations for optimiser
+            population (Int): number of members in population
+            ftol (Double) : convergence criteria for function
+            workers (Int): number of multiprocessing workers to use. -1 sets workers to mp.cpu_count()
         '''
-
-        self.options = options
-        self.niter = self.options["niter"]
-        self.population = self.options["population"]
+        
+        self.function = func
+        self.niter = niter
+        self.population = population
         self.particles = []
         self.best_global_vec = None
         self.best_global_fit = math.inf
-        self.ftol = self.options["ftol"]
-        self.bounds = np.asarray(self.options["bounds"])
-        self.pool = Pool(mp.cpu_count())
+        self.ftol = ftol
+        self.bounds = np.asarray(bounds)
+
+        if workers == -1:
+            self.pool = Pool(mp.cpu_count())
+        else:
+            self.pool = Pool(workers)
  
 
     def vector_to_pot(self,vector):
@@ -204,7 +212,7 @@ class SOS:
         for i,val in enumerate(res.get()):
             self.particles[val[0]].vector, self.particles[val[0]].fit=val[2],val[1]
 
-    def optimise(self,function,args):
+    def optimise(self, args):
         '''
         Optimise the function: run 
 
@@ -213,11 +221,11 @@ class SOS:
             args (Optional): any further args required by function 
 
         '''
-        self.function = function
+
         self.args = args
         self.initialise_particles()
 
-        for step in range(self.options["niter"]):
+        for step in range(self.niter):
             print("Doing step",step)
             self.run_mutualism()
             self.run_commensalism()
