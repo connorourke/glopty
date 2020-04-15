@@ -224,7 +224,6 @@ class SOS:
         b_ind = np.random.choice(
             [i for i in range(self.population) if i != part.index], 1, replace=False
         )[0]
-        print(b_ind)
         parasite = copy.deepcopy(part.vector)
         parasite[np.random.randint(0, len(self.bounds))] = np.random.rand()
 
