@@ -61,7 +61,7 @@ class SOS:
         """
         return ((self.bounds[:, 1] - self.bounds[:, 0]) * vector) + self.bounds[:, 0]
 
-    def part_init(self,vector):
+    def part_init(self, vector):
         """
         Wrapper for particle initialisation for multiprocess
         
@@ -75,7 +75,7 @@ class SOS:
         result of function(vector)
         """
 
-        return vector,self.function(self.vector_to_pot(vector), self.args)
+        return vector, self.function(self.vector_to_pot(vector), self.args)
 
     def initialise_particles(self):
         """
@@ -96,7 +96,7 @@ class SOS:
             vectors = lhs(len(self.bounds), self.population)
             res = self.pool.amap(self.part_init, vectors)
             for i, val in enumerate(res.get()):
-                self.particles.append(Particle(val[0],val[1],i))
+                self.particles.append(Particle(val[0], val[1], i))
 
             self.best_global_fit = copy.deepcopy(self.particles[0].return_fit)
             self.best_global_vec = copy.deepcopy(self.particles[0].return_vec)
