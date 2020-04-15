@@ -92,7 +92,7 @@ x
 
     def vector_to_pot(self, vector):
         """
-        Converts sos vector to actual x values
+        Converts particle vector to actual x values
         
         Args:
             vector (numpy array): vector position in parameter space
