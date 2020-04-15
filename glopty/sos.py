@@ -8,7 +8,7 @@ import pathos.multiprocessing as mp
 from glopty.particle import Particle
 from glopty.io import output, VectorInOut
 import sys
-
+import pathos.helpers as pathelp
 
 class SOS:
     def __init__(
@@ -21,6 +21,7 @@ class SOS:
         workers=-1,
         restart=False,
         vec_dump=10,
+        seed=None
     ):
         """ 
         Initialise a symbiotic organisms search instance
@@ -32,6 +33,10 @@ class SOS:
             population (Int): number of members in population
             ftol (Double) : convergence criteria for function
             workers (Int): number of multiprocessing workers to use. -1 sets workers to mp.cpu_count()
+            vec_dump (Int): outputs restart file vec_dump number of steps  
+            restart (Bool): restart the run from a restart file
+            seed (Int): seed for random number generator, useful for tests
+
         """
 
         self.function = func
@@ -45,6 +50,7 @@ class SOS:
         self.restart = restart
         self.vector_restart = VectorInOut(bounds, "sos.rst")
         self.vec_dump = vec_dump
+        self.seed = seed
 
         if workers == -1:
             self.pool = Pool(mp.cpu_count())
@@ -126,7 +132,7 @@ class SOS:
             part.vector (np.array): vector position in paramter space
             part.fit    (Double): value of function at point in param space corresponding to part.vector
         """
-
+        np.random.seed()
         b_ind = np.random.choice(
             [i for i in range(self.population) if i != part.index], 1, replace=False
         )[0]
@@ -171,7 +177,7 @@ class SOS:
             part.vector (np.array): vector position in paramter space
             part.fit    (Double): value of function at point in param space corresponding to part.vector
         """
-
+        np.random.seed()
         b_ind = np.random.choice(
             [i for i in range(self.population) if i != part.index], 1, replace=False
         )[0]
@@ -214,10 +220,11 @@ class SOS:
             part.vector (np.array): vector position in paramter space
             part.fit    (Double): value of function at point in param space corresponding to part.vector
         """
-
+        np.random.seed()        
         b_ind = np.random.choice(
             [i for i in range(self.population) if i != part.index], 1, replace=False
         )[0]
+        print(b_ind)
         parasite = copy.deepcopy(part.vector)
         parasite[np.random.randint(0, len(self.bounds))] = np.random.rand()
 

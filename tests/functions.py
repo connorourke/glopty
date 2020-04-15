@@ -1,12 +1,15 @@
 import numpy as np
 
 
-def ackley(x, a=20, b=0.2, c=2 * np.pi):
+def ackley(x,args):
     """
     x: vector of input values
     """
 
     n = len(x)
+    a=args["a"] 
+    b=args["b"] 
+    c=2*np.pi
     s1 = sum(np.power(x, 2))
     s2 = sum(np.cos(c * x))
     ack = -a * np.exp(-b * np.sqrt(s1 / n)) - np.exp(s2 / n) + a + np.exp(1)
