@@ -143,11 +143,9 @@ class SOS:
         bf = np.random.randint(1, 3, 2)
 
         mutant = np.random.rand(len(self.bounds))
-        print("mutualism mutant",mutant)
         mutual = (a + b) / 2
         new_a = np.clip(a + (mutant * (self.best_global_vec - (mutual * bf[0]))), 0, 1)
         new_b = np.clip(b + (mutant * (self.best_global_vec - (mutual * bf[1]))), 0, 1)
-        print("mutualism a,b",a,b)
 
         for i, vec in enumerate([[part.index, new_a], [b_ind, new_b]]):
             trial_pot = self.vector_to_pot(vec[1])
@@ -190,9 +188,7 @@ class SOS:
         b = self.particles[b_ind].vector
 
         mutant = np.random.uniform(-1, 1, len(self.bounds))
-        print("commenalism mutant",mutant)
         new_a = np.clip(a + (mutant[0] * (self.best_global_vec - b)), 0, 1)
-        print("commensalism new_a",new_a,a + (mutant[0] * (self.best_global_vec - b)))
         trial_pot = self.vector_to_pot(new_a)
         error = self.function(trial_pot, self.args)
 
@@ -234,7 +230,6 @@ class SOS:
         
             trial = np.random.uniform(0, 1, len(self.bounds))
             cross_points = np.random.rand(len(self.bounds)) < 0.3
-            print("cross_points",cross_points)
             if not np.any(cross_points):
                 cross_points[np.random.randint(0, len(self.bounds))] = True
 
