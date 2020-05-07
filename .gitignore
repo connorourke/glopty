@@ -4,4 +4,6 @@
 build/*
 dist*
 temp.py
+sos.out
+sos.rst
 */*/*pyc

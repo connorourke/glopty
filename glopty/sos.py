@@ -15,13 +15,14 @@ class SOS:
         self,
         func,
         bounds,
-        niter=100,
+        niter=500,
         population=10,
         ftol=0.001,
         workers=-1,
         restart=False,
         vec_dump=10,
-        seed=None
+        seed=None,
+        aggressive_parasite=False
     ):
         """ 
         Initialise a symbiotic organisms search instance
@@ -51,6 +52,7 @@ class SOS:
         self.vector_restart = VectorInOut(bounds, "sos.rst")
         self.vec_dump = vec_dump
         self.seed = seed
+        self.aggressive_parasite = aggressive_parasite
 
         if workers == -1:
             self.pool = Pool(mp.cpu_count())
@@ -141,9 +143,11 @@ class SOS:
         bf = np.random.randint(1, 3, 2)
 
         mutant = np.random.rand(len(self.bounds))
+        print("mutualism mutant",mutant)
         mutual = (a + b) / 2
         new_a = np.clip(a + (mutant * (self.best_global_vec - (mutual * bf[0]))), 0, 1)
         new_b = np.clip(b + (mutant * (self.best_global_vec - (mutual * bf[1]))), 0, 1)
+        print("mutualism a,b",a,b)
 
         for i, vec in enumerate([[part.index, new_a], [b_ind, new_b]]):
             trial_pot = self.vector_to_pot(vec[1])
@@ -186,8 +190,9 @@ class SOS:
         b = self.particles[b_ind].vector
 
         mutant = np.random.uniform(-1, 1, len(self.bounds))
+        print("commenalism mutant",mutant)
         new_a = np.clip(a + (mutant[0] * (self.best_global_vec - b)), 0, 1)
-
+        print("commensalism new_a",new_a,a + (mutant[0] * (self.best_global_vec - b)))
         trial_pot = self.vector_to_pot(new_a)
         error = self.function(trial_pot, self.args)
 
@@ -224,8 +229,21 @@ class SOS:
         b_ind = np.random.choice(
             [i for i in range(self.population) if i != part.index], 1, replace=False
         )[0]
-        parasite = copy.deepcopy(part.vector)
-        parasite[np.random.randint(0, len(self.bounds))] = np.random.rand()
+        
+        if self.aggressive_parasite:
+        
+            trial = np.random.uniform(0, 1, len(self.bounds))
+            cross_points = np.random.rand(len(self.bounds)) < 0.3
+            print("cross_points",cross_points)
+            if not np.any(cross_points):
+                cross_points[np.random.randint(0, len(self.bounds))] = True
+
+            
+            parasite = np.where(cross_points,trial,part.vector)
+        else:
+            parasite = copy.deepcopy(part.vector)
+            parasite[np.random.randint(0, len(self.bounds))] = np.random.rand()
+
 
         trial_pot = self.vector_to_pot(parasite)
         error = self.function(trial_pot, self.args)
